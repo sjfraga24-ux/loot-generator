@@ -32,16 +32,16 @@ public class LootGenerator {
     }
 
     public static class Item{
-        String prefix;
-        String suffix;
-        String name;
-        Integer minDef;
-        Integer maxDef;
-        Integer trueDef;
-        Integer sufBuff;
-        Integer preBuff;
-        String preType;
-        String sufType;
+        String prefix = "";
+        String suffix = "";
+        String name = "";
+        int minDef;
+        int maxDef;
+        int trueDef;
+        int sufBuff;
+        int preBuff;
+        String preType = "";
+        String sufType = "";
 
         public Item(){}
         
@@ -59,10 +59,11 @@ public class LootGenerator {
             this.suffix = suffix;
         }
 
-        public void setDef(){
+        public void setDef(int min, int max){
             Random rand = new Random();
-            int dif = maxDef - minDef +1;
-            trueDef = minDef + rand.nextInt(dif);
+            //System.out.println(name + " " + minDef + " " + maxDef);
+            int dif = max - min +1;
+            trueDef = min + rand.nextInt(dif);
         }
         
     }
@@ -188,13 +189,10 @@ public class LootGenerator {
         int idx = rand.nextInt(3);
         Item ret = new Item();
         if(TCData.containsKey(TC) || itemData.containsKey(TC)){
-            System.out.println("got here");
-            System.out.println(itemData.containsKey(TC));
             if(itemData.containsKey(TC)){
                 ret.name = TC;
                 ret.minDef = itemData.get(ret.name).minDef;
                 ret.maxDef = itemData.get(ret.name).maxDef;
-                System.out.println(ret.name);
                 return ret;
             } else if(TCData.containsKey(TCData.get(TC).items[idx]) || TCData.containsKey(TC)){
                 String newTC = TCData.get(TC).items[idx];
@@ -252,15 +250,25 @@ public class LootGenerator {
         System.out.println("You have slain " + enemy.name + "!");
         System.out.println(enemy.name + " dropped:");
         Item drop = GenerateBaseItem(enemy.itemClass);
-        drop.setDef();
+        System.out.println(drop.name);
+        drop.setDef(drop.minDef, drop.maxDef);
         generateAffix(drop);
-        System.out.println(drop.prefix + " " + drop.name + " " + drop.suffix);
+        String pre = drop.prefix;
+        String suf = drop.suffix;
+        String nme = drop.name;
+        if(pre.equals("")){
+            System.out.println(nme + " " + suf);
+        }else{
+            System.out.println(pre + " " + nme + " " + suf);
+        }
+        
+        
         System.out.println("Defense: " + drop.trueDef);
         if(drop.prefix != ""){
-            System.out.println(drop.preBuff + drop.preType);
+            System.out.println(drop.preBuff + " " + drop.preType);
         }
         if(drop.suffix != ""){
-            System.out.println(drop.sufBuff + drop.sufType);
+            System.out.println(drop.sufBuff + " " + drop.sufType);
         }
         
     }
