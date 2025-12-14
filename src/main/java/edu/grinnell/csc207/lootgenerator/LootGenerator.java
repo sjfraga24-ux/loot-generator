@@ -1,6 +1,9 @@
 package edu.grinnell.csc207.lootgenerator;
 
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
@@ -9,11 +12,11 @@ public class LootGenerator {
     /** The path to the dataset (either the small or large set). */
     private static final String DATA_SET = "data/small";
 
-    public static ArrayList<Monster> monData;
-    public static Map<String, Item> itemData;
-    public static Map<String, TC> TCData;
-    public static Map<Integer, String[]> PreData;
-    public static Map<Integer, String[]> SufData;
+    public static ArrayList<Monster> monData = new ArrayList<>();
+    public static Map<String, Item> itemData = new HashMap<>();
+    public static Map<String, TC> TCData = new HashMap<>();
+    public static Map<Integer, String[]> PreData = new HashMap<>();
+    public static Map<Integer, String[]> SufData = new HashMap<>();
 
     public static class Monster{
         String name;
@@ -45,7 +48,7 @@ public class LootGenerator {
         public Item(String name, String minDef, String maxDef){
             this.name = name;
             this.minDef = Integer.parseInt(minDef);
-            this.maxDef = Integer.parseInt(maxDef);
+            this.maxDef = Integer.parseInt(maxDef);;
         }
 
         public void setPre(String prefix){
@@ -78,11 +81,17 @@ public class LootGenerator {
     /**
      * Stores the monster data from a given file in monData
      * @param path : given file path
+     * @throws IOException 
      */
-    public static void makeMonData(String path){
-        Scanner input = new Scanner(path + "/monstats.txt");
-        while(input.hasNextLine()){
-            Monster temp = new Monster(input.next(), input.next(), input.next(), input.next());
+    public static void makeMonData(String path) throws IOException{
+        Scanner input = new Scanner(Paths.get(path + "/monstats.txt"));
+        input.useDelimiter("\t|   ");
+        while(input.hasNext()){
+            String name = input.next();
+            String type = input.next();
+            String lvl = input.next().replaceAll("\\s", "");
+            String itmClass =  input.next().replaceAll("\n", "");
+            Monster temp = new Monster(name, type, lvl, itmClass);
             monData.add(temp);
         }
         input.close();
@@ -91,11 +100,16 @@ public class LootGenerator {
     /**
      * Stores the item data from a given file in itemData
      * @param path : given file path
+     * @throws IOException 
      */    
-    public static void makeItemData(String path){
-        Scanner input = new Scanner(path + "/armor.txt");
-        while(input.hasNextLine()){
-            Item temp = new Item(input.next(), input.next(), input.next());
+    public static void makeItemData(String path) throws IOException{
+        Scanner input = new Scanner(Paths.get(path + "/armor.txt"));
+        input.useDelimiter("\t|   ");
+        while(input.hasNext()){
+            String itmName = input.next();
+            String minDef = input.next();
+            String maxDef = input.nextLine().replaceAll("\\s", "");
+            Item temp = new Item(itmName, minDef, maxDef);
             itemData.put(temp.name, temp);
         }
         input.close();
@@ -104,34 +118,50 @@ public class LootGenerator {
     /**
      * Stores the Treasure class data from a given file in TCData
      * @param path : given file path
+     * @throws IOException 
      */    
-    public static void makeTCData(String path){
-        Scanner input = new Scanner(path + "/TreasureClassEx.txt");
+    public static void makeTCData(String path) throws IOException{
+        Scanner input = new Scanner(Paths.get(path + "/TreasureClassEx.txt"));
+        input.useDelimiter("\t|   ");
         while(input.hasNextLine()){
-            TC temp = new TC(input.next(), input.next(), input.next(), input.next());
+            String tc = input.next();
+            String arm01 = input.next();
+            String arm02 = input.next();
+            String arm03 = input.nextLine().replaceAll("\t", "");
+            TC temp = new TC(tc, arm01, arm02, arm03);
             TCData.put(temp.lootClass, temp);
         }
         input.close();
     } 
 
-    public static void makePreData(String path){
-        Scanner input = new Scanner(path + "/MagicPrefix.txt");
+    public static void makePreData(String path) throws IOException{
+        Scanner input = new Scanner(Paths.get(path + "/MagicPrefix.txt"));
+        input.useDelimiter("\t|   ");
         int count = 0;
         while(input.hasNextLine()){
             int idx = count;
-            String[] data = {input.next(), input.next(), input.next()};
+            String pre = input.next();
+            String stat = input.next();
+            String minBuff = input.next().replaceAll("\\s", "");
+            String maxBuff = input.nextLine().replaceAll("\\s", "");
+            String[] data = {pre, stat, minBuff, maxBuff};
             PreData.put(idx, data);
             count++;
         }
         input.close();
     } 
 
-    public static void makeSufData(String path){
-        Scanner input = new Scanner(path + "/MagicSuffix.txt");
+    public static void makeSufData(String path) throws IOException{
+        Scanner input = new Scanner(Paths.get(path + "/MagicSuffix.txt"));
+        input.useDelimiter("\t|   ");
         int count = 0;
         while(input.hasNextLine()){
             int idx = count;
-            String[] data = {input.next(), input.next(), input.next()};
+            String suf = input.next();
+            String stat = input.next();
+            String minBuff = input.next().replaceAll("\\s", "");
+            String maxBuff = input.nextLine().replaceAll("\\s", "");
+            String[] data = {suf, stat, minBuff, maxBuff};
             SufData.put(idx, data);
             count++;
         }
@@ -155,15 +185,28 @@ public class LootGenerator {
      */
     public static Item GenerateBaseItem(String TC){
         Random rand = new Random();
-        if(TCData.containsValue(TC)){
-            int idx = rand.nextInt(3);
-            Item ret = new Item();
-            ret.name = TCData.get(TC).items[idx];
-            ret.minDef = itemData.get(ret.name).minDef;
-            ret.maxDef = itemData.get(ret.name).maxDef;
-            return ret;
+        int idx = rand.nextInt(3);
+        Item ret = new Item();
+        if(TCData.containsKey(TC) || itemData.containsKey(TC)){
+            System.out.println("got here");
+            System.out.println(itemData.containsKey(TC));
+            if(itemData.containsKey(TC)){
+                ret.name = TC;
+                ret.minDef = itemData.get(ret.name).minDef;
+                ret.maxDef = itemData.get(ret.name).maxDef;
+                System.out.println(ret.name);
+                return ret;
+            } else if(TCData.containsKey(TCData.get(TC).items[idx]) || TCData.containsKey(TC)){
+                String newTC = TCData.get(TC).items[idx];
+                GenerateBaseItem(newTC);
+                
+            } else{
+                return null;
+            }
+        } else{
+            return null;
         }
-        return null;
+        return ret;
     }
 
     public static void generateAffix(Item item){
@@ -206,8 +249,8 @@ public class LootGenerator {
     public static void helper(){
         Monster enemy = getMonster();
         System.out.println("Fighting " + enemy.name);
-        System.out.println("You have slain  " + enemy.name + "!");
-        System.out.println(enemy.name + "dropped:");
+        System.out.println("You have slain " + enemy.name + "!");
+        System.out.println(enemy.name + " dropped:");
         Item drop = GenerateBaseItem(enemy.itemClass);
         drop.setDef();
         generateAffix(drop);
@@ -222,7 +265,7 @@ public class LootGenerator {
         
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         System.out.println("This program kills monsters and generates loot!");
         makeItemData(DATA_SET);
         makeMonData(DATA_SET);
