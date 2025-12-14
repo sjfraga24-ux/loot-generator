@@ -1,5 +1,10 @@
 package edu.grinnell.csc207.lootgenerator;
 
+import org.junit.jupiter.api.Test;
+
 public class Tests {
-    // TODO: include your unit tests here!
+    @Test
+    public void trueDefCorrect(){
+        
+    }
 }

@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class LootGenerator {
     /** The path to the dataset (either the small or large set). */
-    private static final String DATA_SET = "data/small";
+    private static final String DATA_SET = "data/large";
 
     public static ArrayList<Monster> monData = new ArrayList<>();
     public static Map<String, Item> itemData = new HashMap<>();
@@ -18,6 +18,7 @@ public class LootGenerator {
     public static Map<Integer, String[]> PreData = new HashMap<>();
     public static Map<Integer, String[]> SufData = new HashMap<>();
 
+    // A class that stores variables for monsters
     public static class Monster{
         String name;
         String type;
@@ -31,6 +32,8 @@ public class LootGenerator {
         }
     }
 
+
+    // A class that stores methods and variables for items
     public static class Item{
         String prefix = "";
         String suffix = "";
@@ -51,23 +54,34 @@ public class LootGenerator {
             this.maxDef = Integer.parseInt(maxDef);;
         }
 
+        /**
+         * Sets the prefix to the given value
+         * @param prefix
+         */
         public void setPre(String prefix){
             this.prefix = prefix;
         }
 
+        /**
+         * Sets the suffix to the given value
+         * @param suffix
+         */
         public void setSuf(String suffix){
             this.suffix = suffix;
         }
 
-        public void setDef(int min, int max){
+        /**
+         * Finds a def val between minDef and maxDef(inclusive) then sets it to trueDef
+         */
+        public void setDef(){
             Random rand = new Random();
-            //System.out.println(name + " " + minDef + " " + maxDef);
-            int dif = max - min +1;
-            trueDef = min + rand.nextInt(dif);
+            int dif = maxDef - minDef +1;
+            trueDef = minDef + rand.nextInt(dif);
         }
         
     }
 
+    // A class that stores methods and variables for the Treasure Class
     public static class TC{
         String lootClass;
         String[] items = new String[3];
@@ -89,9 +103,13 @@ public class LootGenerator {
         input.useDelimiter("\t|   ");
         while(input.hasNext()){
             String name = input.next();
+            System.out.println(name);
             String type = input.next();
+            System.out.println(type);
             String lvl = input.next().replaceAll("\\s", "");
-            String itmClass =  input.next().replaceAll("\n", "");
+            System.out.println(lvl);
+            String itmClass =  input.nextLine().trim();
+            System.out.println(itmClass);
             Monster temp = new Monster(name, type, lvl, itmClass);
             monData.add(temp);
         }
@@ -135,6 +153,11 @@ public class LootGenerator {
         input.close();
     } 
 
+    /**
+     * Stores the Magic Prefix data from a given file in TCData
+     * @param path : given file path
+     * @throws IOException 
+     */    
     public static void makePreData(String path) throws IOException{
         Scanner input = new Scanner(Paths.get(path + "/MagicPrefix.txt"));
         input.useDelimiter("\t|   ");
@@ -152,6 +175,11 @@ public class LootGenerator {
         input.close();
     } 
 
+    /**
+     * Stores the Magic Suffix data from a given file in TCData
+     * @param path : given file path
+     * @throws IOException 
+     */    
     public static void makeSufData(String path) throws IOException{
         Scanner input = new Scanner(Paths.get(path + "/MagicSuffix.txt"));
         input.useDelimiter("\t|   ");
@@ -171,7 +199,7 @@ public class LootGenerator {
 
     /**
      * Creates a random monster based on the data in monData
-     * @return a random monster
+     * @returns a random monster
      */
     public static Monster getMonster(){
         Random rand = new Random();
@@ -196,7 +224,7 @@ public class LootGenerator {
                 return ret;
             } else if(TCData.containsKey(TCData.get(TC).items[idx]) || TCData.containsKey(TC)){
                 String newTC = TCData.get(TC).items[idx];
-                GenerateBaseItem(newTC);
+                return GenerateBaseItem(newTC);
                 
             } else{
                 return null;
@@ -204,9 +232,13 @@ public class LootGenerator {
         } else{
             return null;
         }
-        return ret;
     }
 
+    /**
+     * Determines whether Item has a prefix or suffix.
+     * If it does, then generates a random prefix and/or suffix.
+     * @param item : The item that is getting a prefix or suffix
+     */
     public static void generateAffix(Item item){
         Random rand = new Random();
         int chance = rand.nextInt(2);
@@ -244,14 +276,16 @@ public class LootGenerator {
         }
     }
 
+    /**
+     * A helper function that runs the monster fighting simulation.
+     */
     public static void helper(){
         Monster enemy = getMonster();
         System.out.println("Fighting " + enemy.name);
         System.out.println("You have slain " + enemy.name + "!");
         System.out.println(enemy.name + " dropped:");
         Item drop = GenerateBaseItem(enemy.itemClass);
-        System.out.println(drop.name);
-        drop.setDef(drop.minDef, drop.maxDef);
+        drop.setDef();
         generateAffix(drop);
         String pre = drop.prefix;
         String suf = drop.suffix;
@@ -273,6 +307,11 @@ public class LootGenerator {
         
     }
 
+    /**
+     * A program that kills monsters and generates loot until the player exits
+     * @param args
+     * @throws IOException
+     */
     public static void main(String[] args) throws IOException {
         System.out.println("This program kills monsters and generates loot!");
         makeItemData(DATA_SET);
@@ -295,10 +334,6 @@ public class LootGenerator {
                 System.out.println("Please enter a valid character.");
             }
         }
-        
-
-
-
         input.close();
     }
 }
