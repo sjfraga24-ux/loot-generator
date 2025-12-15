@@ -27,7 +27,7 @@ public class LootGenerator {
         public Monster(String name, String type, String level, String itemClass){
             this.name = name;
             this.type = type;
-            this.level = Integer.parseInt(level);
+            this.level = Integer.valueOf(level);
             this.itemClass = itemClass;
         }
     }
@@ -51,7 +51,7 @@ public class LootGenerator {
         public Item(String name, String minDef, String maxDef){
             this.name = name;
             this.minDef = Integer.parseInt(minDef);
-            this.maxDef = Integer.parseInt(maxDef);;
+            this.maxDef = Integer.parseInt(maxDef);
         }
 
         /**
@@ -103,13 +103,9 @@ public class LootGenerator {
         input.useDelimiter("\t|   ");
         while(input.hasNext()){
             String name = input.next();
-            System.out.println(name);
             String type = input.next();
-            System.out.println(type);
             String lvl = input.next().replaceAll("\\s", "");
-            System.out.println(lvl);
             String itmClass =  input.nextLine().trim();
-            System.out.println(itmClass);
             Monster temp = new Monster(name, type, lvl, itmClass);
             monData.add(temp);
         }
@@ -249,8 +245,8 @@ public class LootGenerator {
         if(chance > 0){
             item.prefix = PreData.get(idx)[0];
             item.preType = PreData.get(idx)[1];
-            buffMin = Integer.parseInt(PreData.get(idx)[2]);
-            buffMax = Integer.parseInt(PreData.get(idx)[3]);
+            buffMin = Integer.valueOf(PreData.get(idx)[2]);
+            buffMax = Integer.valueOf(PreData.get(idx)[3]);
             int buffDif = buffMax - buffMin +1;
             item.preBuff = buffMin + rand.nextInt(buffDif);
         }else{
@@ -265,8 +261,8 @@ public class LootGenerator {
         if(chance > 0){
             item.suffix = SufData.get(idx)[0];
             item.sufType = SufData.get(idx)[1];
-            buffMin = Integer.parseInt(SufData.get(idx)[2]);
-            buffMax = Integer.parseInt(SufData.get(idx)[3]);
+            buffMin = Integer.valueOf(SufData.get(idx)[2]);
+            buffMax = Integer.valueOf(SufData.get(idx)[3]);
             int buffDif = buffMax - buffMin +1;
             item.sufBuff = buffMin + rand.nextInt(buffDif);
         }else{
@@ -298,10 +294,10 @@ public class LootGenerator {
         
         
         System.out.println("Defense: " + drop.trueDef);
-        if(drop.prefix != ""){
+        if(!drop.prefix.equals("")){
             System.out.println(drop.preBuff + " " + drop.preType);
         }
-        if(drop.suffix != ""){
+        if(!drop.suffix.equals("")){
             System.out.println(drop.sufBuff + " " + drop.sufType);
         }
         
