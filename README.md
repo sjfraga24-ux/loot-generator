@@ -1,6 +1,6 @@
 # Project: Loot Generator
 
-Authors: (_TODO: fill in names here!_)
+Authors:Sydney
 
 ## Resources
 
