@@ -10,7 +10,7 @@ import java.util.Scanner;
 
 public class LootGenerator {
     /** The path to the dataset (either the small or large set). */
-    private static final String DATA_SET = "data/small";
+    private static final String DATA_SET = "data/large";
 
     public static ArrayList<Monster> monData = new ArrayList<>();
     public static Map<String, Item> itemData = new HashMap<>();
