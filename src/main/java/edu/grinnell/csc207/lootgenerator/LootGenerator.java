@@ -299,10 +299,10 @@ public class LootGenerator {
         
         
         System.out.println("Defense: " + drop.trueDef);
-        if(drop.prefix != ""){
+        if(!drop.prefix.equals("")){
             System.out.println(drop.preBuff + " " + drop.preType);
         }
-        if(drop.suffix != ""){
+        if(!drop.suffix.equals("")){
             System.out.println(drop.sufBuff + " " + drop.sufType);
         }
         
