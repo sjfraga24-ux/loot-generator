@@ -1,5 +1,6 @@
 package edu.grinnell.csc207.lootgenerator;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.Scanner;
 
 public class LootGenerator {
     /** The path to the dataset (either the small or large set). */
-    private static final String DATA_SET = "data/large";
+    private static final String DATA_SET = "data/small";
 
     public static ArrayList<Monster> monData = new ArrayList<>();
     public static Map<String, Item> itemData = new HashMap<>();
