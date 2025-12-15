@@ -212,7 +212,6 @@ public class LootGenerator {
         Random rand = new Random();
         int idx = rand.nextInt(3);
         Item ret = new Item();
-        if(TCData.containsKey(TC) || itemData.containsKey(TC)){
             if(itemData.containsKey(TC)){
                 ret.name = TC;
                 ret.minDef = itemData.get(ret.name).minDef;
@@ -225,9 +224,6 @@ public class LootGenerator {
             } else{
                 return null;
             }
-        } else{
-            return null;
-        }
     }
 
     /**
